@@ -372,7 +372,7 @@ const SITE = {
   sub:  "A subsidiary of Norjack Interdimensional",
   seo:  "Where are the orcas? Live orca sighting map",
   /* shown in the About panel so you can tell which download you are looking at */
-  build: "Build 3 Sep 2026 a"
+  build: "Build 3 Sep 2026 d"
 };
 
 /* ============================================================
@@ -1767,6 +1767,34 @@ function bootFailure(){
   l.appendChild(box);
 }
 
+/* MapLibre renders the compact attribution box already expanded on first paint, which
+   covers a chunk of the map before anyone has asked for it. Collapse it to the (i)
+   button. The button still toggles it open, so the OpenStreetMap and feed credits stay
+   one tap away, which is what the ODbL licence actually asks for.
+
+   Two guards, because MapLibre re-renders this control whenever a source is added and
+   would otherwise pop it back open: `attribTouched` latches as soon as the reader
+   interacts with the control, and the listeners are registered in the CAPTURE phase so
+   they fire ahead of MapLibre's own handler rather than being pre-empted by it.
+   ATTRIB_GRACE is a belt-and-braces stop: after that, this never touches the DOM again. */
+const ATTRIB_GRACE = 8000;
+let attribTouched = false, attribSince = 0;
+function collapseAttribution(){
+  if(attribTouched) return;
+  if(!attribSince) attribSince = Date.now();
+  else if(Date.now() - attribSince > ATTRIB_GRACE) return;
+  const c = document.querySelector(".maplibregl-ctrl-attrib.maplibregl-compact");
+  if(!c) return;
+  /* bound on the container, not the (i) button: once the box is open it covers the
+     button, so a click lands on the panel and a button-only listener never fires */
+  if(!c.dataset.njBound){
+    c.dataset.njBound = "1";
+    ["click","mousedown","touchstart"].forEach(ev =>
+      c.addEventListener(ev, () => { attribTouched = true; }, true));
+  }
+  c.classList.remove("maplibregl-compact-show");
+}
+
 function initMap(){
   map=new maplibregl.Map({
     container:"map",
@@ -1833,7 +1861,9 @@ function initMap(){
     });
     map.on("zoom",updateCityLabels);
     map.on("idle",alignBridges);
+    map.on("idle",collapseAttribution);
 
+    collapseAttribution();
     dismissLoading();
     loadData(false);
     setInterval(()=>loadData(false),10*60*1000);
