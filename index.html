@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Where are the orcas? Live orca sighting map</title>
-<meta name="description" content="A live pixel-art map of recent orca (killer whale) sightings. Real-time community reports around the Salish Sea and photo reports worldwide. Updates automatically on every visit.">
+<meta name="description" content="A live map of recent orca (killer whale) sightings. Real-time community reports around the Salish Sea and photo reports worldwide. Updates automatically on every visit. Plain map, satellite, or retro pixel-art mode.">
 <meta property="og:title" content="Where are the orcas?">
 <meta property="og:description" content="A live map of recent orca sightings, updated automatically from community sighting networks.">
 <meta property="og:type" content="website">
@@ -51,7 +51,9 @@ body{font-family:var(--ui);color:var(--ink);background:var(--land);
 #map{position:fixed;inset:0}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;font-family:var(--ui)}
 a{color:var(--accent)}
-canvas{image-rendering:pixelated}
+/* Only pixel skins upscale the map canvas with nearest-neighbour. The little logo
+   canvases are pixel art in every mode, so they always stay crisp. */
+body[data-mode="pixel"] .maplibregl-canvas,.mark,.icon,.njmark,.loading canvas{image-rendering:pixelated}
 
 /* ---------- chunky pixel frame ---------- */
 .frame{
@@ -88,7 +90,7 @@ canvas{image-rendering:pixelated}
 .subrow{display:flex;align-items:center;gap:8px}
 .njmark{width:40px;height:52px;flex:none;image-rendering:pixelated}
 /* the mark sits clear of every control: bottom right on desktop, top left on phones */
-.njmap{position:fixed;z-index:25;right:14px;bottom:46px;
+.njmap{position:fixed;z-index:25;right:14px;bottom:96px;
   filter:drop-shadow(2px 2px 0 rgba(0,0,0,.4))}
 
 /* score bar */
@@ -231,6 +233,89 @@ body[data-fx="dot"] #fx{display:block;
   background:repeating-linear-gradient(to bottom,rgba(15,56,15,.16) 0 1px,transparent 1px 3px),
              repeating-linear-gradient(to right,rgba(15,56,15,.16) 0 1px,transparent 1px 3px)}
 
+/* ============================================================
+   PLAIN MODE - the "Map" and "Satellite" views. Same markup, same
+   variables; only the chrome changes: system font, rounded panels,
+   no bevels, larger type. Pixel mode is untouched by anything here.
+   ============================================================ */
+body[data-mode="plain"]{
+  --title:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ui:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --px:1px;
+  -webkit-font-smoothing:auto}
+body[data-mode="plain"] .frame{border:1px solid rgba(0,0,0,.16);border-radius:12px;
+  box-shadow:0 4px 18px rgba(0,0,0,.18)}
+body[data-mode="plain"] .btn{border:1px solid rgba(0,0,0,.18);border-radius:8px;
+  box-shadow:0 1px 2px rgba(0,0,0,.12);text-transform:none;letter-spacing:0;
+  font-size:14px;padding:8px 12px;font-weight:600}
+body[data-mode="plain"] .btn:active{transform:none;box-shadow:inset 0 1px 3px rgba(0,0,0,.2)}
+body[data-mode="plain"] .btn[aria-pressed="true"]{box-shadow:none;border-color:transparent}
+body[data-mode="plain"] .brand h1{font-size:19px;font-weight:800;letter-spacing:-.01em;line-height:1.25;margin-bottom:3px}
+body[data-mode="plain"] .brand .sub{font-size:12px;text-transform:none;letter-spacing:0;font-weight:500}
+body[data-mode="plain"] .score{border-radius:10px;border:0;box-shadow:none;padding:10px 12px}
+body[data-mode="plain"] .score .n{font-size:26px;font-weight:800}
+body[data-mode="plain"] .score .lbl{font-size:13px;text-transform:none;letter-spacing:0;font-weight:500;opacity:.9}
+body[data-mode="plain"] .fresh{font-size:13px;text-transform:none;letter-spacing:0;font-weight:600}
+body[data-mode="plain"] .fresh .blink{border-radius:50%;border:0}
+body[data-mode="plain"] .chips .btn{font-size:13px;padding:7px 11px}
+body[data-mode="plain"] .legend{border-radius:10px;border:1px solid rgba(0,0,0,.1)}
+body[data-mode="plain"] .lg{font-size:12px;text-transform:none;letter-spacing:0;font-weight:600}
+body[data-mode="plain"] .lg i{width:13px;height:13px;border-radius:50%;border:2px solid #fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+body[data-mode="plain"] .hint{font-size:13px;font-weight:400;line-height:1.5}
+body[data-mode="plain"] .list-title{font-size:13px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+body[data-mode="plain"] .row{border-radius:10px;border:1px solid transparent}
+body[data-mode="plain"] .row:hover{border-color:rgba(0,0,0,.1)}
+body[data-mode="plain"] .row .dot{width:14px;height:14px;border-radius:50%;border:2px solid #fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+body[data-mode="plain"] .row .when{font-size:14px;text-transform:none;letter-spacing:0;font-weight:700}
+body[data-mode="plain"] .row .what{font-size:13.5px}
+body[data-mode="plain"] .row img{border-radius:6px;border:1px solid rgba(0,0,0,.12)}
+body[data-mode="plain"] .empty{font-size:14px}
+body[data-mode="plain"] .morenote{font-size:12px;text-transform:none;letter-spacing:0;font-weight:600}
+body[data-mode="plain"] .pfoot{border-top:1px solid rgba(0,0,0,.1);border-radius:0 0 12px 12px}
+body[data-mode="plain"] .pfoot .btn{font-size:13px;padding:7px 10px}
+body[data-mode="plain"] .skins{border-radius:10px;padding:6px 8px}
+body[data-mode="plain"] .skins .cap{font-size:11px;font-weight:700;color:var(--muted)}
+body[data-mode="plain"] .skins .btn{font-size:13px;padding:6px 10px}
+body[data-mode="plain"] .statuspill{font-size:12px;text-transform:none;letter-spacing:0;font-weight:600;border-radius:999px}
+body[data-mode="plain"] .maplibregl-popup-content{width:296px}
+body[data-mode="plain"] .maplibregl-popup-close-button{font-size:18px;font-weight:400;padding:4px 10px}
+body[data-mode="plain"] .pp{padding:13px 14px}
+body[data-mode="plain"] .pp .top{font-size:13px;text-transform:none;letter-spacing:0;padding-right:26px}
+body[data-mode="plain"] .pp .top .dot{border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+body[data-mode="plain"] .pp .top .src{font-size:12px}
+body[data-mode="plain"] .pp .stamp{font-size:12px;text-transform:none;letter-spacing:0;font-weight:500}
+body[data-mode="plain"] .pp .what{font-size:14px}
+body[data-mode="plain"] .pp .meta{font-size:12.5px}
+body[data-mode="plain"] .pp img{border-radius:8px;border:1px solid rgba(0,0,0,.12)}
+body[data-mode="plain"] .pp .lnk{font-size:13px;text-transform:none;letter-spacing:0}
+body[data-mode="plain"] .cty{display:none}
+body[data-mode="plain"] .bouncer b{font-size:14px;font-weight:800;border-radius:6px;border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.4);padding:2px 7px}
+body[data-mode="plain"] .bouncer i{border-top-color:#fff}
+body[data-mode="plain"] .modal{border-radius:14px}
+body[data-mode="plain"] .modal h2{font-size:20px;font-weight:800}
+body[data-mode="plain"] .modal h3{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+body[data-mode="plain"] .modal p{font-size:14.5px}
+body[data-mode="plain"] .modal .x{font-size:18px}
+body[data-mode="plain"] .loading p{font-size:16px;font-weight:700}
+body[data-mode="plain"] .toast{border-radius:10px;font-size:13.5px}
+body[data-mode="plain"] .maplibregl-ctrl-group{border:1px solid rgba(0,0,0,.18)!important;border-radius:8px!important;
+  box-shadow:0 1px 4px rgba(0,0,0,.2)!important}
+body[data-mode="plain"] .maplibregl-ctrl-group button{border-radius:0!important}
+body[data-mode="plain"] .maplibregl-ctrl-attrib{font-size:10px}
+body[data-mode="plain"] .grab i{border-radius:3px;width:40px;height:4px}
+/* copy that only makes sense in one mode */
+body[data-mode="plain"] .only-pixel,body[data-mode="pixel"] .only-plain{display:none}
+/* the Norjack mark: pixel badge in Retro, the real logo image otherwise */
+/* the real artwork, square: the slot is 40x52 for the pixel badge, 48x48 for this */
+.njvec{width:48px;height:48px}
+.njvec img{display:block;width:100%;height:100%;border-radius:9px}
+body[data-mode="plain"] canvas.njmark,body[data-mode="pixel"] .njvec{display:none}
+body[data-mode="plain"] .njmap{filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+body[data-mode="plain"] .njmap.njvec{bottom:92px}
+
 @media (max-width:719px){
   .panel{top:auto;bottom:0;left:0;right:0;width:100%;max-height:80dvh;
     transition:max-height .28s ease;padding-bottom:env(safe-area-inset-bottom);border-bottom:0}
@@ -244,12 +329,14 @@ body[data-fx="dot"] #fx{display:block;
   .score .n{font-size:17px}
   .statuspill{left:14px;bottom:auto;top:14px}
   .fitbtn{top:112px}
-  .njmap{bottom:auto;right:auto;top:56px;left:14px}
+  .njmap{bottom:auto;right:auto;top:90px;left:14px}
   /* lift the OSM attribution above the collapsed panel - ODbL requires it visible */
   .maplibregl-ctrl-bottom-right,.maplibregl-ctrl-bottom-left{
     bottom:calc(196px + env(safe-area-inset-bottom,0px) + 4px)}
   .skins{display:none}
   #skinCycle{display:block}
+  body[data-mode="plain"] .panel{border-radius:14px 14px 0 0}
+  body[data-mode="plain"] .panel.collapsed{max-height:206px}
 }
 </style>
 <script type="application/ld+json">
@@ -266,7 +353,7 @@ body[data-fx="dot"] #fx{display:block;
  "browserRequirements":"Requires JavaScript",
  "isAccessibleForFree":true,
  "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},
- "description":"A live pixel-art map of recent orca sightings. Real-time community reports from the Salish Sea via Acartia, plus worldwide photo reports from iNaturalist.",
+ "description":"A live map of recent orca sightings. Real-time community reports from the Salish Sea via Acartia, plus worldwide photo reports from iNaturalist. Plain map, satellite, or retro pixel-art mode.",
  "image":"https://wherearetheorcas.com/og-image.png"}
 ]}
 </script>
@@ -314,21 +401,24 @@ body[data-fx="dot"] #fx{display:block;
         <span class="lg"><i id="lg3"></i>Older</span>
         <span class="lg approx"><i id="lg4"></i>Approx</span>
       </div>
-      <p class="hint">Tap any orca for details. The bouncing <b>!</b> marks the newest report of all.
-        Faded orcas are photo reports whose location iNaturalist privacy-blurred (~25 km).</p>
+      <p class="hint"><span class="only-pixel">Tap any orca for details. The bouncing <b>!</b> marks the newest report of all.
+        Faded orcas are photo reports whose location iNaturalist privacy-blurred (~25 km).</span><span class="only-plain">Tap
+        any marker for details. The bouncing <b>!</b> marks the newest report of all. Faded markers are photo reports
+        whose location iNaturalist privacy-blurred (~25 km).</span></p>
 
       <h2 class="list-title">LATEST REPORTS</h2>
     </div>
     <div class="list" id="list" aria-live="polite"></div>
   </div>
   <div class="pfoot">
-    <button class="btn" id="surpriseBtn">Surprise Me</button>
+    <button class="btn only-pixel" id="surpriseBtn">Surprise Me</button>
     <button class="btn" id="aboutBtn">About</button>
     <button class="btn" id="reportBtn">Report a Sighting</button>
   </div>
 </header>
 
 <canvas class="njmark njmap" id="njMark" width="40" height="52" aria-label="Norjack logo"></canvas>
+<span class="njmark njmap njvec" role="img" aria-label="Norjack logo"><img src="data:image/png;base64,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" alt=""></span>
 <button class="btn fitbtn" id="fitBtn" title="Zoom to all sightings in range">Show All</button>
 
 <div class="statuspill frame">
@@ -337,9 +427,9 @@ body[data-fx="dot"] #fx{display:block;
 </div>
 
 <div class="skins frame" id="skins">
-  <span class="cap">SKIN</span>
+  <span class="cap">VIEW</span>
 </div>
-<button class="btn" id="skinCycle">Skin: Super Orca World &raquo;</button>
+<button class="btn" id="skinCycle">View: Map &raquo;</button>
 
 <div class="overlay" id="aboutOverlay" role="dialog" aria-modal="true" aria-labelledby="aboutH">
   <div class="modal frame">
@@ -357,9 +447,13 @@ body[data-fx="dot"] #fx{display:block;
        location of <b>some</b> orca reports by roughly 25 km. Those orcas are drawn faded and show a
        general area, not an exact spot; the rest appear where they were actually seen.</p>
     <h3>Reading The Map</h3>
-    <p>Tile color shows freshness. The deeper the color, the more recent. Numbered blocks are several
+    <p>Color shows freshness. The deeper the color, the more recent. Numbered markers are several
        sightings grouped together; zoom in to split them apart. The bouncing marker is the newest report
        in your selected time range.</p>
+    <h3>Three Ways To Look</h3>
+    <p><b>Map</b> is a plain street map. <b>Satellite</b> is aerial imagery. <b>Retro</b> is the
+       same sightings on a hand-drawn 16-bit overworld (Super Orca World), with landmarks to find as you zoom in. Use the
+       VIEW buttons in the corner to switch; the map remembers your choice.</p>
     <h3>Please Be Whale Wise</h3>
     <p>If you head out to look: keep your distance. Regulations protect these whales, and in Washington
        State vessels must stay at least 1,000 yards away from Southern Resident orcas. See
@@ -367,6 +461,7 @@ body[data-fx="dot"] #fx{display:block;
        curiosity and education, not navigation.</p>
     <p style="display:flex;align-items:center;gap:9px;margin-top:16px">
       <canvas class="njmark" id="njMark2" width="40" height="52" aria-label="Norjack logo"></canvas>
+      <span class="njmark njvec" role="img" aria-label="Norjack logo"><img src="data:image/png;base64,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" alt=""></span>
       <span>Made by Norjack Interdimensional. <b id="buildStamp"></b></span></p>
     <p style="margin-top:14px">Sightings belong to their reporters and networks · Basemap
        © <a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> /
@@ -403,15 +498,39 @@ const SITE = {
   sub:  "A subsidiary of Norjack Interdimensional",
   seo:  "Where are the orcas? Live orca sighting map",
   /* shown in the About panel so you can tell which download you are looking at */
-  build: "Build 7 Oct 2026 a"
+  build: "Build 19 Oct 2026 b"
 };
 
 /* ============================================================
    SKINS
    ============================================================ */
 const SKINS = {
+  /* The two plain views. `mode` is what makes a skin plain: no pixel upscaling, no
+     terrain or landmark sprites, the basemap's own roads and labels, round markers,
+     and the system font in the panel. "street" restores the basemap's original paint
+     (water and background recoloured); "sat" puts Esri World Imagery under the labels. */
+  plain: {
+    label:"Map", pick:"Map", mode:"street",
+    map:{ land:"#f2efe9", water:"#a5cde6", roads:true },
+    ui:{ panel:"#ffffff", panel2:"#f3f4f6", edge:"#d5d9df", hi:"#ffffff", lo:"#d5d9df",
+         ink:"#1a1d21", ink2:"#4b5563", muted:"#6b7280", accent:"#0b6bcb", accentInk:"#ffffff",
+         hud:"#1f2937", hudInk:"#ffffff", logoEdge:"#1a1d21" },
+    age:["#e0242b","#f26f21","#f9b621","#b0aa9f"],
+    orca:{ body:"#161014", belly:"#ffffff", rim:"#ffffff" },
+    fx:"none"
+  },
+  sat: {
+    label:"Satellite", pick:"Satellite", mode:"sat",
+    map:{ land:"#1b2a33", water:"#1b2a33", roads:false },
+    ui:{ panel:"#ffffff", panel2:"#f3f4f6", edge:"#d5d9df", hi:"#ffffff", lo:"#d5d9df",
+         ink:"#1a1d21", ink2:"#4b5563", muted:"#6b7280", accent:"#0b6bcb", accentInk:"#ffffff",
+         hud:"#1f2937", hudInk:"#ffffff", logoEdge:"#1a1d21" },
+    age:["#e0242b","#f26f21","#f9b621","#b0aa9f"],
+    orca:{ body:"#161014", belly:"#ffffff", rim:"#ffffff" },
+    fx:"none"
+  },
   mario: {
-    label:"Super Orca World",
+    label:"Super Orca World", pick:"Retro",
     map:{ land:"#74c365", landAlt:"#63b356", park:"#4f9a45", water:"#4a9ee8",
           boundary:"#3f7d38", roads:false, building:"#63b356", buildingOpacity:.35 },
     ui:{ panel:"#fdf6e3", panel2:"#f3e6c8", edge:"#2b1d0e", hi:"#ffffff", lo:"#c9b48a",
@@ -466,10 +585,14 @@ const SKINS = {
     fx:"dot"
   }
 };
-/* Only Super Orca World ships. The other four stay in SKINS above, costing nothing -
-   add their ids back here and the picker returns on its own. With a single skin the
-   picker hides itself, so the skin has no name to display anywhere. */
-const SKIN_ORDER = ["mario"];
+/* Map is the default - the plain view is what most people want. Retro (Super
+   Orca World) is one click away and the choice is remembered. The four retired pixel
+   skins stay in SKINS above and still work via #skin=gameboy etc.; add an id here and
+   it appears in the picker. */
+const SKIN_ORDER = ["plain","sat","mario"];
+const DEFAULT_SKIN = "plain";
+const SKIN_KEY = "wato-skin";
+const isPlain = sk => !!sk.mode;
 
 /* ============================================================
    config
@@ -620,7 +743,7 @@ function bigOrca(canvas,sk,color){
   if(!canvas) return;
   const s = Math.floor(canvas.width/22);
   const g = pxCtx(22,16,s);
-  drawTile(g,22,16,color,sk.ui.edge);
+  drawTile(g,22,16,color,sk.ui.logoEdge||sk.ui.edge);
   drawOrca(g,3,3,sk);
   const cx = canvas.getContext("2d");
   cx.imageSmoothingEnabled = false;
@@ -1387,7 +1510,7 @@ const NJ_HALF=[
 ".y.......",".y......."];
 function logoTile(sk){
   const W=20,H=26,g=tile(W,H);
-  g.px(0,0,sk.ui.edge,W,H);
+  g.px(0,0,sk.ui.logoEdge||sk.ui.edge,W,H);
   g.px(1,1,NJ_GREEN,W-2,H-2);
   NJ_HALF.forEach((row,y)=>{
     for(let x=0;x<9;x++) if(row[x]==="y"){ g.px(1+x,2+y,NJ_BOLT); g.px(18-x,2+y,NJ_BOLT); }
@@ -1403,12 +1526,31 @@ function drawLogo(canvas,sk){
   cx.save(); cx.scale(s,s); cx.drawImage(g.c,0,0); cx.restore();
 }
 
+/* Plain-mode markers: a round pin with a white ring and a soft shadow, drawn at 2x so
+   it is sharp on any screen. Nothing pixel about it. */
+function roundMarker(color,d){
+  const s=2, c=document.createElement("canvas"); c.width=c.height=(d+4)*s;
+  const x=c.getContext("2d"); x.scale(s,s);
+  const r=d/2, cx=r+2, cy=r+2;
+  x.shadowColor="rgba(0,0,0,.35)"; x.shadowBlur=3; x.shadowOffsetY=1;
+  x.beginPath(); x.arc(cx,cy,r-1,0,Math.PI*2); x.fillStyle=color; x.fill();
+  x.shadowColor="transparent";
+  x.lineWidth=2; x.strokeStyle="#ffffff"; x.stroke();
+  x.beginPath(); x.arc(cx,cy,r,0,Math.PI*2); x.lineWidth=.8; x.strokeStyle="rgba(0,0,0,.35)"; x.stroke();
+  return x.getImageData(0,0,c.width,c.height);
+}
+
 function registerSprites(){
-  /* every skin's sprites, not just the shipped one, so a #skin= hash always works */
+  /* every skin's sprites, not just the shipped ones, so a #skin= hash always works */
   Object.keys(SKINS).forEach(id=>{
     const sk = SKINS[id];
     sk.age.forEach((col,i)=>{
       const a = "orca-"+id+"-"+i, b = "pod-"+id+"-"+i;
+      if(isPlain(sk)){
+        if(!map.hasImage(a)) map.addImage(a, roundMarker(col,18), {pixelRatio:2});
+        if(!map.hasImage(b)) map.addImage(b, roundMarker(col,32), {pixelRatio:2});
+        return;
+      }
       if(!map.hasImage(a)) map.addImage(a, toImageData(orcaTile(sk,col)), {pixelRatio:IMG_PR});
       if(!map.hasImage(b)) map.addImage(b, toImageData(clusterTile(sk,col)), {pixelRatio:IMG_PR});
     });
@@ -1542,6 +1684,7 @@ function applyUiSkin(){
   r.setProperty("--land",sk.map.land); r.setProperty("--water",sk.map.water);
   sk.age.forEach((c,i)=>r.setProperty("--a"+i,c));
   document.body.dataset.skin=skinId;
+  document.body.dataset.mode=isPlain(sk)?"plain":"pixel";
   document.body.dataset.fx=sk.fx;
   document.querySelector('meta[name="theme-color"]').setAttribute("content",sk.ui.hud);
   for(let i=0;i<4;i++) $("lg"+i).style.background=sk.age[i];
@@ -1552,13 +1695,23 @@ function applyUiSkin(){
   bigOrca($("loadOrca"),sk,sk.age[0]);
   document.querySelectorAll("#skins .btn").forEach(b=>
     b.setAttribute("aria-pressed", b.dataset.skin===skinId ? "true":"false"));
-  const cyc=$("skinCycle"); if(cyc) cyc.innerHTML="Skin: "+sk.label+" &raquo;";
+  const cyc=$("skinCycle"); if(cyc) cyc.innerHTML="View: "+(sk.pick||sk.label)+" &raquo;";
 }
 
+/* The basemap's own paint, captured once before any skin touches it, so the plain
+   views can put it back exactly. */
+let origPaint = null;
+const PAINT_PROPS = {fill:["fill-color","fill-opacity"], line:["line-color","line-opacity"],
+                     background:["background-color"]};
 function classifyStyle(){
   styleLayers = {sym:[],road:[],water:[],land:[],park:[],bldg:[],bound:[],waterway:[]};
+  origPaint = {};
   map.getStyle().layers.forEach(l=>{
-    if(l.source==="sightings"||l.source==="peaks"||l.id.indexOf("t-")===0) return;
+    if(l.source==="sightings"||l.source==="peaks"||l.source==="landmarks"||
+       l.source==="structures"||l.id==="sat"||l.id.indexOf("t-")===0) return;
+    (PAINT_PROPS[l.type]||[]).forEach(p=>{
+      try{ (origPaint[l.id]=origPaint[l.id]||{})[p]=map.getPaintProperty(l.id,p); }catch(e){}
+    });
     const sl=l["source-layer"];
     if(l.type==="symbol") styleLayers.sym.push(l.id);
     else if(sl==="transportation"||sl==="aeroway") styleLayers.road.push(l.id);
@@ -1572,6 +1725,13 @@ function classifyStyle(){
 }
 const vis=(id,on)=>{ try{ map.setLayoutProperty(id,"visibility",on?"visible":"none"); }catch(e){} };
 const paint=(id,prop,val)=>{ try{ map.setPaintProperty(id,prop,val); }catch(e){} };
+function restoreOrigPaint(){
+  if(!origPaint) return;
+  Object.keys(origPaint).forEach(id=>Object.keys(origPaint[id]).forEach(p=>paint(id,p,origPaint[id][p])));
+}
+/* Pixel skins render the map at half resolution and upscale it with nearest-neighbour
+   for the chunky grid. Plain skins render at the screen's native resolution. */
+const mapPixelRatio = () => isPlain(skin()) ? Math.min(window.devicePixelRatio||1,2) : 1/PIXEL;
 
 function applyMapSkin(){
   if(!map) return;
@@ -1579,30 +1739,42 @@ function applyMapSkin(){
      downloading. Retry on the next idle instead of silently skipping the skin. */
   if(!map.isStyleLoaded()){ map.once("idle",()=>applyMapSkin()); return; }
   if(!styleLayers) classifyStyle();
-  const m=skin().map;
-  styleLayers.sym.forEach(id=>vis(id,false));
+  const sk=skin(), m=sk.map, plain=isPlain(sk), mode=sk.mode||"pixel";
+  try{ const pr=mapPixelRatio(); if(map.getPixelRatio()!==pr) map.setPixelRatio(pr); }catch(e){}
+  /* the basemap's own labels only in the plain views; pixel skins draw city names as HTML */
+  styleLayers.sym.forEach(id=>vis(id,plain));
   styleLayers.road.forEach(id=>vis(id,!!m.roads));
-  styleLayers.bldg.forEach(id=>{ paint(id,"fill-color",m.building); paint(id,"fill-opacity",m.buildingOpacity); });
-  styleLayers.water.forEach(id=>paint(id,"fill-color",m.water));
-  styleLayers.waterway.forEach(id=>paint(id,"line-color",m.water));
-  styleLayers.park.forEach(id=>paint(id,"fill-color",m.park));
-  /* Admin and maritime borders read as stray scratches across a game map. */
-  styleLayers.bound.forEach(id=>{
-    if(skin().terrain){ vis(id,false); return; }
-    vis(id,true); paint(id,"line-color",m.boundary); paint(id,"line-opacity",.7);
-  });
-  styleLayers.land.forEach(id=>{
-    if(id==="background") paint(id,"background-color",m.land);
-    else paint(id,"fill-color",m.landAlt);
-  });
-  applyTerrain(!!skin().terrain);
-  const sk=skin();
+  if(plain){
+    restoreOrigPaint();
+    styleLayers.water.forEach(id=>paint(id,"fill-color",m.water));
+    styleLayers.waterway.forEach(id=>paint(id,"line-color",m.water));
+    paint("background","background-color",m.land);
+    styleLayers.bound.forEach(id=>vis(id,mode==="street"));
+  } else {
+    styleLayers.bldg.forEach(id=>{ paint(id,"fill-color",m.building); paint(id,"fill-opacity",m.buildingOpacity); });
+    styleLayers.water.forEach(id=>paint(id,"fill-color",m.water));
+    styleLayers.waterway.forEach(id=>paint(id,"line-color",m.water));
+    styleLayers.park.forEach(id=>paint(id,"fill-color",m.park));
+    /* Admin and maritime borders read as stray scratches across a game map. */
+    styleLayers.bound.forEach(id=>{
+      if(sk.terrain){ vis(id,false); return; }
+      vis(id,true); paint(id,"line-color",m.boundary); paint(id,"line-opacity",.7);
+    });
+    styleLayers.land.forEach(id=>{
+      if(id==="background") paint(id,"background-color",m.land);
+      else paint(id,"fill-color",m.landAlt);
+    });
+  }
+  vis("sat",mode==="sat");
+  applyTerrain(!plain && !!sk.terrain);
   const iconExpr=["step",["get","age"],"orca-"+skinId+"-0",
     AGE_EDGES[0],"orca-"+skinId+"-1",AGE_EDGES[1],"orca-"+skinId+"-2",AGE_EDGES[2],"orca-"+skinId+"-3"];
   const podExpr=["step",["get","minAge"],"pod-"+skinId+"-0",
     AGE_EDGES[0],"pod-"+skinId+"-1",AGE_EDGES[1],"pod-"+skinId+"-2",AGE_EDGES[2],"pod-"+skinId+"-3"];
   try{ map.setLayoutProperty("dots","icon-image",iconExpr); }catch(e){}
   try{ map.setLayoutProperty("clusters","icon-image",podExpr); }catch(e){}
+  try{ map.setLayoutProperty("dots","icon-size",plain?1:0.72); }catch(e){}
+  try{ map.setLayoutProperty("clusters","icon-size",plain?1:0.72); }catch(e){}
   try{ map.setPaintProperty("cluster-count","text-color",
     ["step",["get","minAge"],inkOn(sk.age[0]),AGE_EDGES[0],inkOn(sk.age[1]),
      AGE_EDGES[1],inkOn(sk.age[2]),AGE_EDGES[2],inkOn(sk.age[3])]); }catch(e){}
@@ -1613,7 +1785,11 @@ function setSkin(id,push){
   skinId=id;
   applyUiSkin();
   applyMapSkin();
-  if(push!==false){ try{ history.replaceState(null,"","#skin="+id); }catch(e){} }
+  if(push!==false){
+    try{ localStorage.setItem(SKIN_KEY,id); }catch(e){}
+    /* the default view keeps a clean URL; anything else is shareable as #skin=... */
+    try{ history.replaceState(null,"", id===DEFAULT_SKIN ? location.pathname+location.search : "#skin="+id); }catch(e){}
+  }
   if(!firstRender) render();
 }
 
@@ -1826,6 +2002,17 @@ function collapseAttribution(){
   c.classList.remove("maplibregl-compact-show");
 }
 
+/* Esri World Imagery under the basemap's own labels. Hidden unless the Satellite view
+   is on, so the tiles (and the Esri attribution line) only appear when asked for. */
+function addSatellite(){
+  map.addSource("esri-sat",{ type:"raster", tileSize:256, maxzoom:19,
+    tiles:["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+    attribution:"Imagery &copy; Esri, Maxar, Earthstar Geographics, and the GIS User Community" });
+  const firstLabel=map.getStyle().layers.find(l=>l.type==="symbol"&&l.source==="openmaptiles");
+  map.addLayer({ id:"sat", type:"raster", source:"esri-sat", layout:{visibility:"none"},
+    paint:{"raster-fade-duration":150} }, firstLabel&&firstLabel.id);
+}
+
 function initMap(){
   map=new maplibregl.Map({
     container:"map",
@@ -1833,7 +2020,7 @@ function initMap(){
     bounds:HOME,
     fitBoundsOptions:{padding:{top:30,bottom:40,left:window.innerWidth>719?400:30,right:30}},
     maxZoom:15.5,
-    pixelRatio:1/PIXEL,
+    pixelRatio:mapPixelRatio(),
     attributionControl:{compact:true,customAttribution:"Sightings: Acartia · iNaturalist"}
   });
   /* Rotation stays off: the landmark sprites are rotation-aligned to the map (so the
@@ -1851,6 +2038,7 @@ function initMap(){
     registerTerrainArt();
     addTerrainLayers();
     addLandmarkLayers();
+    addSatellite();
     map.addSource("sightings",{ type:"geojson",
       data:{type:"FeatureCollection",features:[]},
       cluster:true, clusterRadius:44, clusterMaxZoom:11,
@@ -1918,7 +2106,7 @@ function buildSkinPicker(){
   SKIN_ORDER.forEach((id,i)=>{
     const b=document.createElement("button");
     b.className="btn"; b.dataset.skin=id;
-    b.textContent=(i+1)+". "+SKINS[id].label;
+    b.textContent=SKINS[id].pick||SKINS[id].label;
     b.addEventListener("click",()=>setSkin(id));
     wrap.appendChild(b);
   });
@@ -1987,8 +2175,10 @@ $("siteSub").textContent=SITE.sub;
 $("buildStamp").textContent=SITE.build;
 document.title=SITE.seo;
 buildSkinPicker();
+/* URL hash wins, then the remembered choice, then the plain map. */
 const hashSkin=(location.hash.match(/skin=([a-z]+)/)||[])[1];
-setSkin(SKINS[hashSkin]?hashSkin:"mario", false);
+let savedSkin=null; try{ savedSkin=localStorage.getItem(SKIN_KEY); }catch(e){}
+setSkin(SKINS[hashSkin]?hashSkin:(SKINS[savedSkin]&&SKIN_ORDER.includes(savedSkin)?savedSkin:DEFAULT_SKIN), false);
 
 /* Watchdog is armed before anything can throw, so a blocked CDN, a blocked style
    fetch or an outright exception all end at the same explain-yourself screen.
